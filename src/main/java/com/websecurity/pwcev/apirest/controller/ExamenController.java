@@ -254,4 +254,37 @@ public class ExamenController {
 		response.put("resultado",resultado);
 		return new ResponseEntity<Map<String, Object>>(response,  HttpStatus.OK);
 	}
+	
+	@GetMapping("/cantidad/{idusuario}")
+	public ResponseEntity<?> CantidadExamenesPorUsuario(@PathVariable("idusuario") Integer idUsuario) {
+
+		Integer cant_exam = 0;
+		Map<String, Object> response = new HashMap<>();
+		
+		if (!usuarioService.existeUsuarioById(idUsuario)) {
+			response.put("mensaje", "El usuario no existe con esas credenciales");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		else {
+	
+			if (usuarioService.validarRol(idUsuario, "ROLE_PROF")) {
+	
+				try {
+					cant_exam = service.CantidadExamenesPorIdUsuario(idUsuario);
+				} catch (DataAccessException e) {
+					response.put("mensaje", "Error al realizar la consulta en la base de datos");
+					response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+					return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+	
+				return new ResponseEntity<Integer>(cant_exam, HttpStatus.OK);
+			}
+			else {
+	
+				response.put("mensaje", "El usuario no es profesor.");
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			}
+		
+		}
+	}
 }

@@ -13,4 +13,5 @@ public interface ICursoService {
 	List<Curso> listar();
 	void eliminar(Integer id);
 	boolean existeCurso(Integer id);
+	Integer CantidadCursosPorIdUsuario(Integer idUsuario);
 }

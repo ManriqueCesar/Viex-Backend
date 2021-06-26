@@ -74,4 +74,9 @@ public class CursoServiceImpl implements ICursoService{
 		return repo.existsById(id);
 	}
 
+	@Override
+	public Integer CantidadCursosPorIdUsuario(Integer idUsuario) {
+		return repo.CantCursosByUser(idUsuario);
+	}
+
 }

@@ -21,4 +21,5 @@ public interface IExamenService{
 	List<DetalleExamenNota> listarExamenesNotasPorIdUsuario(Integer idUsuario);
 	DetalleExamenCompleto examenCompleto(Integer idExamen);
 	Resultado registrarSolucion(DetalleExamenCulminado detalle);
+	Integer CantidadExamenesPorIdUsuario(Integer idUsuario);
 }

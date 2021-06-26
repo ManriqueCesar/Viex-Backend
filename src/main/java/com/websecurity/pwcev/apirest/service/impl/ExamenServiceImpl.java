@@ -261,4 +261,10 @@ public class ExamenServiceImpl implements IExamenService {
 		return resultado;
 	}
 
+	@Override
+	public Integer CantidadExamenesPorIdUsuario(Integer idUsuario) {
+        
+		return repo.CantExamenesByUser(idUsuario);
+	}
+
 }

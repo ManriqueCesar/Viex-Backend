@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.service.ICursoService;
+import com.websecurity.pwcev.apirest.service.IUsuarioService;
 
 @RestController
 @RequestMapping("/cursos")
@@ -27,6 +28,8 @@ public class CursoController {
 	
 	@Autowired
 	private ICursoService service;
+	@Autowired
+	private IUsuarioService usuarioService;
 	
 	@GetMapping
 	public List<Curso> listar() {
@@ -106,6 +109,39 @@ public class CursoController {
 		
 		response.put("mensaje", "El curso ha sido eliminado con éxito!");
 		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/cantidad/{idusuario}")
+	public ResponseEntity<?> CantidadCursosPorUsuario(@PathVariable("idusuario") Integer idUsuario) {
+
+		Integer cant_exam = 0;
+		Map<String, Object> response = new HashMap<>();
+		
+		if (!usuarioService.existeUsuarioById(idUsuario)) {
+			response.put("mensaje", "El usuario no existe con esas credenciales");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		else {
+	
+			if (usuarioService.validarRol(idUsuario, "ROLE_PROF")) {
+	
+				try {
+					cant_exam = service.CantidadCursosPorIdUsuario(idUsuario);
+				} catch (DataAccessException e) {
+					response.put("mensaje", "Error al realizar la consulta en la base de datos");
+					response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+					return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+	
+				return new ResponseEntity<Integer>(cant_exam, HttpStatus.OK);
+			}
+			else {
+	
+				response.put("mensaje", "El usuario no es profesor.");
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			}
+		
+		}
 	}
 
 }

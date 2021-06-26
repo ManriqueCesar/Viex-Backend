@@ -76,6 +76,8 @@ public class CursoServiceImpl implements ICursoService{
 
 	@Override
 	public Integer CantidadCursosPorIdUsuario(Integer idUsuario) {
+		System.out.println(idUsuario);
+		System.out.println(repo.CantCursosByUser(idUsuario));
 		return repo.CantCursosByUser(idUsuario);
 	}
 

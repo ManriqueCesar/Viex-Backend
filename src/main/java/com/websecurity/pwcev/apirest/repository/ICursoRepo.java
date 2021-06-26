@@ -8,7 +8,7 @@ import com.websecurity.pwcev.apirest.model.Curso;
 public interface ICursoRepo  extends JpaRepository<Curso, Integer>{
 	
 	
-	@Query(value = "select count (*) from detallecurso e where e.id_usuario = ?1)", 
+	@Query(value = "select count (*) from detallecurso d where d.id_usuario = ?1", 
 		       nativeQuery = true)
     int CantCursosByUser(int idUsuario);
 }

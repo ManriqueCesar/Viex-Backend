@@ -114,7 +114,7 @@ public class CursoController {
 	@GetMapping("/cantidad/{idusuario}")
 	public ResponseEntity<?> CantidadCursosPorUsuario(@PathVariable("idusuario") Integer idUsuario) {
 
-		Integer cant_exam = 0;
+		Integer cant_cur = 0;
 		Map<String, Object> response = new HashMap<>();
 		
 		if (!usuarioService.existeUsuarioById(idUsuario)) {
@@ -126,14 +126,14 @@ public class CursoController {
 			if (usuarioService.validarRol(idUsuario, "ROLE_PROF")) {
 	
 				try {
-					cant_exam = service.CantidadCursosPorIdUsuario(idUsuario);
+					cant_cur = service.CantidadCursosPorIdUsuario(idUsuario);
 				} catch (DataAccessException e) {
 					response.put("mensaje", "Error al realizar la consulta en la base de datos");
 					response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 					return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 	
-				return new ResponseEntity<Integer>(cant_exam, HttpStatus.OK);
+				return new ResponseEntity<Integer>(cant_cur, HttpStatus.OK);
 			}
 			else {
 	

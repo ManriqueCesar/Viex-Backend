@@ -123,7 +123,7 @@ public class CursoController {
 		}
 		else {
 	
-			if (usuarioService.validarRol(idUsuario, "ROLE_PROF")) {
+			//if (usuarioService.validarRol(idUsuario, "ROLE_PROF")) {
 	
 				try {
 					cant_cur = service.CantidadCursosPorIdUsuario(idUsuario);
@@ -134,12 +134,12 @@ public class CursoController {
 				}
 	
 				return new ResponseEntity<Integer>(cant_cur, HttpStatus.OK);
-			}
+			/*}
 			else {
 	
 				response.put("mensaje", "El usuario no es profesor.");
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
-			}
+			}*/
 		
 		}
 	}

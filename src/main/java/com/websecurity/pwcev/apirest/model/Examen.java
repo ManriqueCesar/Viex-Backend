@@ -40,6 +40,9 @@ public class Examen {
 	@Column(name = "tiempo_duracion", nullable = false)
 	private float TiempoDuracion;
 	
+	@Column(name = "status", nullable = true)
+	private Integer status;
+	
 	@ManyToOne
 	@JoinColumn(name = "id_curso", nullable = false, foreignKey = @ForeignKey(name = "fk_examen_curso"))
 	private Curso curso;
@@ -99,5 +102,15 @@ public class Examen {
 	public void setHoraInicio(Date horaInicio) {
 		this.horaInicio = horaInicio;
 	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+	
+	
 	
 }

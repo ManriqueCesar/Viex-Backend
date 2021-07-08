@@ -287,4 +287,51 @@ public class ExamenController {
 		
 		}
 	}
+	
+	@GetMapping("/pendientes/{idusuario}")
+	public ResponseEntity<?> listarExamenesPendporUsuario(@PathVariable("idusuario") Integer idUsuario) {
+
+		List<Examen> examenes = null;
+		List<DetalleExamenNota> examenesNotas = null;
+		Map<String, Object> response = new HashMap<>();
+
+		if (usuarioService.validarRol(idUsuario, "ROLE_PROF")) {
+
+			/** try {
+				examenes = service.listarExamenesPorIdUsuario(idUsuario);
+			} catch (DataAccessException e) {
+				response.put("mensaje", "Error al realizar la consulta en la base de datos");
+				response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+			if (!usuarioService.existeUsuarioById(idUsuario)) {
+				response.put("mensaje", "El usuario no existe con esas credenciales");
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			}
+			return new ResponseEntity<List<Examen>>(examenes, HttpStatus.OK); **/
+			
+			response.put("mensaje", "El usuario no es alumno.");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		else {
+
+
+			if (!usuarioService.existeUsuarioById(idUsuario)) {
+				response.put("mensaje", "El usuario no existe con esas credenciales");
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+			}
+			
+			try {
+				examenes = service.listarExamenesPendPorIdUsuario(idUsuario);
+			} catch (DataAccessException e) {
+				response.put("mensaje", "Error al realizar la consulta en la base de datos");
+				response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
+			return new ResponseEntity<List<Examen>>(examenes, HttpStatus.OK);
+		}
+
+	}
 }

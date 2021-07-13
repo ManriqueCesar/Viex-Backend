@@ -104,6 +104,7 @@ public class UserServiceImpl implements IUsuarioService {
 		Usuario usuario = new Usuario();
 		usuario.setIdUsuario(us.getIdUsuario());
 		usuario.setRoles(us.getRoles());
+		usuario.setPlan(us.getPlan());
 		usuario.setNombre(us.getNombre());
 		usuario.setApellido(us.getApellido());
 

@@ -5,19 +5,20 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "usuario")
 public class Usuario {
-
-	
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -43,6 +44,9 @@ public class Usuario {
 	@JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "id_usuario", referencedColumnName = "idUsuario"),inverseJoinColumns = @JoinColumn(name = "id_rol", referencedColumnName = "idRol"))
 	private List<Rol> roles;
 	
+	@ManyToOne
+	@JoinColumn(name = "id_plan", nullable = false, foreignKey = @ForeignKey(name = "fk_plan_usuario"))
+	private Plan plan;
 	
 
 	public int getIdUsuario() {
@@ -99,6 +103,14 @@ public class Usuario {
 
 	public void setRoles(List<Rol> roles) {
 		this.roles = roles;
+	}
+	
+	public Plan getPlan() {
+		return plan;
+	}
+
+	public void setPlan(Plan plan) {
+		this.plan = plan;
 	}
 
 }

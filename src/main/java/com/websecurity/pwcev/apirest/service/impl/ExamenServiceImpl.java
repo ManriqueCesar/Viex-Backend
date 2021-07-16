@@ -1,6 +1,12 @@
 package com.websecurity.pwcev.apirest.service.impl;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -226,7 +232,6 @@ public class ExamenServiceImpl implements IExamenService {
 		Optional<Usuario> usuario;
 		Resultado resultado = new Resultado();
 		Optional<Examen> examen;
-		Examen ex;
 		float tiempoFuera;
 		float nota = 0;
 		boolean estado = true;
@@ -249,15 +254,12 @@ public class ExamenServiceImpl implements IExamenService {
 			estado = false;
 		}
 
-		ex = examen.get();
-		ex.setStatus(1);
 		resultado.setEstado(estado);
 		resultado.setExamen(examen.get());
 		resultado.setUsuario(usuario.get());
 		resultado.setIdResultado(null);
 		resultado.setNota(nota);
 		resultado.setTiempoFuera(tiempoFuera);
-		repoExam.save(ex);
 		repoResul.save(resultado);
 
 		return resultado;
@@ -275,6 +277,11 @@ public class ExamenServiceImpl implements IExamenService {
 		List<DetalleCurso> detalleCursos = repoDC.findByUsuarioIdUsuario(idUsuario);
 		List<Curso> cursos = new ArrayList<Curso>();
 		List<Examen> examenes = new ArrayList<Examen>();
+		Calendar calendar = Calendar.getInstance();
+		Date fecha = new Date();
+		Date hora = null;
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		Calendar cal = Calendar.getInstance();
 
 		if (detalleCursos.size() > 0) {
 			for (int i = 0; i < detalleCursos.size(); i++) {
@@ -292,6 +299,20 @@ public class ExamenServiceImpl implements IExamenService {
 				if (examenesxCurso.size() > 0) {
 					for (int i = 0; i < examenesxCurso.size(); i++) {
 
+						fecha = examenesxCurso.get(i).getFechaInicio();
+						fecha.setHours(examenesxCurso.get(i).getHoraInicio().getHours());
+						fecha.setMinutes(examenesxCurso.get(i).getHoraInicio().getMinutes());
+						calendar.setTime(fecha);
+						calendar.add(Calendar.MINUTE, (int) examenesxCurso.get(i).getTiempoDuracion());
+						fecha = calendar.getTime();
+
+						if (fecha.before(cal.getTime()) && examenesxCurso.get(i).getStatus() == 0 ) {
+							Examen examen = new Examen();
+							examen = examenesxCurso.get(i);
+							examen.setStatus(1);
+							repoExam.save(examen);
+						} 
+						
 						if (examenesxCurso.get(i).getStatus() == 0) {
 
 							Examen examen = new Examen();

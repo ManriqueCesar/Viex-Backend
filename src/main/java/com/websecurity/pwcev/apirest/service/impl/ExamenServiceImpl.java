@@ -125,7 +125,7 @@ public class ExamenServiceImpl implements IExamenService {
 				curso.setCurso(detalleCursos.get(i).getCurso().getCurso());
 				curso.setEAP(detalleCursos.get(i).getCurso().getEAP());
 				curso.setPeriodo(detalleCursos.get(i).getCurso().getPeriodo());
-				cursos.add(curso);
+				cursos.add(curso); 
 			}
 
 			for (Curso curso : cursos) {

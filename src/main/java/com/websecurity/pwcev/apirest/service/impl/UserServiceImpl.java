@@ -108,6 +108,7 @@ public class UserServiceImpl implements IUsuarioService {
 		usuario.setNombre(us.getNombre());
 		usuario.setApellido(us.getApellido());
 		usuario.setEmail(us.getEmail());
+		usuario.setDni(us.getDni());
 
 		return usuario;
 	}

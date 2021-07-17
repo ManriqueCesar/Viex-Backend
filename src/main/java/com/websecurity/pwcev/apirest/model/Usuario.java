@@ -34,7 +34,10 @@ public class Usuario {
 	private String nombre;	
 	
 	@Column(name = "apellido", nullable = false)
-	private String apellido;	
+	private String apellido;
+	
+	@Column(name = "dni", nullable = false)
+	private String dni;
 
 	@Column(name = "estado", nullable = false)
 	private boolean enabled;
@@ -111,6 +114,14 @@ public class Usuario {
 
 	public void setPlan(Plan plan) {
 		this.plan = plan;
+	}
+	
+	public String getDni() {
+		return dni;
+	}
+
+	public void setDni(String dni) {
+		this.dni = dni;
 	}
 
 }

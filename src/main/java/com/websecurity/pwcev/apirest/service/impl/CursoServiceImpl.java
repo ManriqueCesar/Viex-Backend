@@ -79,4 +79,14 @@ public class CursoServiceImpl implements ICursoService{
 		return repo.CantCursosByUser(idUsuario);
 	}
 
+	@Override
+	public List<Curso> ListarCursosExamenResuelto() {
+		return repo.CursosExamenResuelto();
+	}
+
+	@Override
+	public List<String> ListarUNIsExamenResuelto() {
+		return repo.UNIExamenResuelto();
+	}
+
 }

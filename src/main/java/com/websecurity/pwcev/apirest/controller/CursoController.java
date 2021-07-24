@@ -18,30 +18,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
 import com.websecurity.pwcev.apirest.model.Curso;
+import com.websecurity.pwcev.apirest.model.Examen;
 import com.websecurity.pwcev.apirest.service.ICursoService;
 import com.websecurity.pwcev.apirest.service.IUsuarioService;
 
 @RestController
 @RequestMapping("/cursos")
 public class CursoController {
-	
+
 	@Autowired
 	private ICursoService service;
 	@Autowired
 	private IUsuarioService usuarioService;
-	
+
 	@GetMapping
 	public List<Curso> listar() {
 		return service.listar();
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<?> listarPorId(@PathVariable("id") Integer idCurso) {
-		
+
 		Optional<Curso> curso = null;
 		Map<String, Object> response = new HashMap<>();
-		
+
 		try {
 			curso = service.findById(idCurso);
 		} catch (DataAccessException e) {
@@ -49,19 +51,20 @@ public class CursoController {
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 		if (!service.existeCurso(idCurso)) {
-			response.put("mensaje", "El examen ID: ".concat(idCurso.toString().concat(" no existe en la base de datos!")));
+			response.put("mensaje",
+					"El examen ID: ".concat(idCurso.toString().concat(" no existe en la base de datos!")));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<Optional<Curso>>(curso,HttpStatus.OK);
+		return new ResponseEntity<Optional<Curso>>(curso, HttpStatus.OK);
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<?> registrar(@RequestBody Curso cur) {
 		Curso curso = null;
 		Map<String, Object> response = new HashMap<>();
-		
+
 		try {
 			curso = service.registrar(cur);
 		} catch (DataAccessException e) {
@@ -69,18 +72,18 @@ public class CursoController {
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 		response.put("mensaje", "El curso ha sido creado con éxito!");
-		response.put("curso",curso);
-		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
+		response.put("curso", curso);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping
 	public ResponseEntity<?> modificar(@RequestBody Curso cur) {
-		
+
 		Curso curso = null;
 		Map<String, Object> response = new HashMap<>();
-		
+
 		try {
 			curso = service.modificar(cur);
 		} catch (DataAccessException e) {
@@ -88,17 +91,17 @@ public class CursoController {
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 		response.put("mensaje", "El curso ha sido actualizado con éxito!");
-		response.put("curso",curso);
-		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED);
+		response.put("curso", curso);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> eliminar(@PathVariable("id") Integer idCurso) {
-		
+
 		Map<String, Object> response = new HashMap<>();
-		
+
 		try {
 			service.eliminar(idCurso);
 		} catch (DataAccessException e) {
@@ -106,42 +109,75 @@ public class CursoController {
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 		response.put("mensaje", "El curso ha sido eliminado con éxito!");
-		return new ResponseEntity<Map<String,Object>>(response, HttpStatus.OK);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/cantidad/{idusuario}")
 	public ResponseEntity<?> CantidadCursosPorUsuario(@PathVariable("idusuario") Integer idUsuario) {
 
 		Integer cant_cur = 0;
 		Map<String, Object> response = new HashMap<>();
-		
+
 		if (!usuarioService.existeUsuarioById(idUsuario)) {
 			response.put("mensaje", "El usuario no existe con esas credenciales");
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		} else {
+
+			// if (usuarioService.validarRol(idUsuario, "ROLE_PROF")) {
+
+			try {
+				cant_cur = service.CantidadCursosPorIdUsuario(idUsuario);
+			} catch (DataAccessException e) {
+				response.put("mensaje", "Error al realizar la consulta en la base de datos");
+				response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+
+			return new ResponseEntity<Integer>(cant_cur, HttpStatus.OK);
+			/*
+			 * } else {
+			 * 
+			 * response.put("mensaje", "El usuario no es profesor."); return new
+			 * ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND); }
+			 */
+
 		}
-		else {
-	
-			//if (usuarioService.validarRol(idUsuario, "ROLE_PROF")) {
-	
-				try {
-					cant_cur = service.CantidadCursosPorIdUsuario(idUsuario);
-				} catch (DataAccessException e) {
-					response.put("mensaje", "Error al realizar la consulta en la base de datos");
-					response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-					return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-				}
-	
-				return new ResponseEntity<Integer>(cant_cur, HttpStatus.OK);
-			/*}
-			else {
-	
-				response.put("mensaje", "El usuario no es profesor.");
-				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
-			}*/
-		
+	}
+
+	@GetMapping("/examenes")
+	public ResponseEntity<?> ListarCursosXExamenesResueltos() {
+		List<Curso> cursos = null;
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			cursos = service.ListarCursosExamenResuelto();
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+
+		response.put("mensaje", "Listado de cursos completo.");
+		return new ResponseEntity<List<Curso>>(cursos, HttpStatus.OK);
+	}
+	
+	@GetMapping("/unis")
+	public ResponseEntity<?> ListarUNIsXExamenesResueltos() {
+		List<String> unis = null;
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			unis = service.ListarUNIsExamenResuelto();
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "Listado de UNIs completo.");
+		return new ResponseEntity<List<String>>(unis, HttpStatus.OK);
 	}
 
 }

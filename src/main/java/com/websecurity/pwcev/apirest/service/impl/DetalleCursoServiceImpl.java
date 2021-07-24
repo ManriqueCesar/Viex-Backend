@@ -32,7 +32,6 @@ public class DetalleCursoServiceImpl implements IDetalleCursoService {
 		boolean existeusuario = usuarioService.existeUsuarioById(registro.getIdUsuario());
 		Curso curso = new Curso();
 		
-		System.out.println(existeusuario);
 		
 		if (existeusuario) {
 			boolean esprofe = usuarioService.validarRol(registro.getIdUsuario(), "ROLE_PROF");
@@ -188,6 +187,16 @@ public class DetalleCursoServiceImpl implements IDetalleCursoService {
 			}
 		}
 		return profesor;
+	}
+
+	@Override
+	public DetalleCurso BuscarXCursoUsuario(Integer idCurso, Integer idUsuario) {
+		return repo.findByCursoIdCursoAndUsuarioIdUsuario(idCurso, idUsuario);
+	}
+
+	@Override
+	public boolean existeAlumnoEnCurso(Integer idCurso, Integer idUsuario) {
+		return repo.existsByCursoIdCursoAndUsuarioIdUsuario(idCurso, idUsuario);
 	}
 
 }

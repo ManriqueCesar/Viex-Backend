@@ -17,4 +17,6 @@ public interface IDetalleCursoService {
 	void eliminar(Integer id);
 	List<CursoModelo> listarCursosPorIdUsuario(Integer idUsuario);
 	List<Usuario> listarAlumnosPorCurso(Integer idCurso);
+	public boolean existeAlumnoEnCurso(Integer idCurso, Integer idUsuario);
+	DetalleCurso BuscarXCursoUsuario(Integer idCurso, Integer idUsuario);
 }

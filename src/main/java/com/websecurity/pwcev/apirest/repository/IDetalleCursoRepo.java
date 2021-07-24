@@ -15,5 +15,7 @@ public interface IDetalleCursoRepo  extends JpaRepository<DetalleCurso, Integer>
 	List<DetalleCurso> findByUsuario(Usuario usuario);
 	List<DetalleCurso> findByUsuarioIdUsuario(Integer idUsuario);
 	List<DetalleCurso> findByCursoIdCurso(Integer idCurso);
+	public boolean existsByCursoIdCursoAndUsuarioIdUsuario(Integer idCurso, Integer idUsuario); 
 	void deleteByCursoIdCurso(Integer idCurso);
+	DetalleCurso findByCursoIdCursoAndUsuarioIdUsuario(Integer idCurso, Integer idUsuario);
 }

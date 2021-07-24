@@ -25,6 +25,7 @@ public class DetalleCurso {
 	@JoinColumn(name = "id_usuario", nullable = false, foreignKey = @ForeignKey(name = "fk_detalle_usuario"))
 	private Usuario usuario;
 
+
 	public Integer getIdDetalleCurso() {
 		return idDetalleCurso;
 	}

@@ -8,28 +8,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.websecurity.pwcev.apirest.entidadmodelo.AlumnosCurso;
 import com.websecurity.pwcev.apirest.model.Curso;
+import com.websecurity.pwcev.apirest.model.DetalleCurso;
 import com.websecurity.pwcev.apirest.model.Examen;
+import com.websecurity.pwcev.apirest.model.Usuario;
 import com.websecurity.pwcev.apirest.repository.ICursoRepo;
 import com.websecurity.pwcev.apirest.repository.IDetalleCursoRepo;
 import com.websecurity.pwcev.apirest.repository.IExamenRepo;
+import com.websecurity.pwcev.apirest.repository.IUsuarioRepo;
 import com.websecurity.pwcev.apirest.service.ICursoService;
+import com.websecurity.pwcev.apirest.service.IUsuarioService;
 
 @Service
 @Transactional
-public class CursoServiceImpl implements ICursoService{
-	
+public class CursoServiceImpl implements ICursoService {
+
 	@Autowired
 	private ICursoRepo repo;
-	
+
 	@Autowired
 	private IExamenRepo repoEx;
-	
+
 	@Autowired
 	private ExamenServiceImpl servExa;
 	
 	@Autowired
+	private UserServiceImpl servUsu;
+
+	@Autowired
 	private IDetalleCursoRepo repoDC;
+	
+	@Autowired
+	private IUsuarioRepo repoUs;
 
 	@Override
 	public Optional<Curso> findById(Integer id) {
@@ -53,19 +64,19 @@ public class CursoServiceImpl implements ICursoService{
 
 	@Override
 	public void eliminar(Integer id) {
-		
-		List<Examen> examenes =  new ArrayList<Examen>();
-		
+
+		List<Examen> examenes = new ArrayList<Examen>();
+
 		examenes = repoEx.findByCursoIdCurso(id);
-		
+
 		if (examenes.size() > 0) {
 			for (Examen examen : examenes) {
 				servExa.eliminar(examen.getIdExamen());
 			}
 		}
-		
+
 		repoDC.deleteByCursoIdCurso(id);
-		
+
 		repo.deleteById(id);
 	}
 
@@ -87,6 +98,39 @@ public class CursoServiceImpl implements ICursoService{
 	@Override
 	public List<String> ListarUNIsExamenResuelto() {
 		return repo.UNIExamenResuelto();
+	}
+
+	@Override
+	public List<AlumnosCurso> ListarAlumnosPorCurso( Integer id_curso) {
+		List<AlumnosCurso> alumnoscurso = new ArrayList<AlumnosCurso>();
+		List<DetalleCurso> detalleCurso =  new ArrayList<DetalleCurso>();
+		
+		detalleCurso = repoDC.findByCursoIdCurso(id_curso);
+		
+		for (DetalleCurso detail : detalleCurso) {
+			
+			if (servUsu.validarRol(detail.getUsuario().getIdUsuario(), "ROLE_PROF")) {
+				continue;
+			}
+			
+			AlumnosCurso alumCurso =  new AlumnosCurso(
+					detail.getUsuario().getIdUsuario(), 
+					detail.getUsuario().getNombre(),
+					detail.getUsuario().getApellido(), 
+					repo.PromedioPorAlumno(detail.getUsuario().getIdUsuario(), id_curso), 
+					repo.CantExamAprob(detail.getUsuario().getIdUsuario(), id_curso), 
+					repo.CantExamDesaprob(detail.getUsuario().getIdUsuario(), id_curso), 
+					repo.CantExamAusente(detail.getUsuario().getIdUsuario(), id_curso));
+			alumnoscurso.add(alumCurso);
+		}
+		
+		return alumnoscurso;
+	}
+
+	@Override
+	public double PromedioPorCurso(Integer idCurso) {
+		
+		return repo.PromedioPorCurso(idCurso);
 	}
 
 }

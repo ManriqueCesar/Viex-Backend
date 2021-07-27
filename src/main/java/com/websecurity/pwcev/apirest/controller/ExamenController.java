@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.websecurity.pwcev.apirest.entidadmodelo.AlumnosCurso;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCompleto;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCulminado;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
+import com.websecurity.pwcev.apirest.entidadmodelo.ExamCursoAlumno;
 import com.websecurity.pwcev.apirest.model.DetalleRegistroExamen;
 import com.websecurity.pwcev.apirest.model.Examen;
 import com.websecurity.pwcev.apirest.model.Pregunta;
@@ -334,4 +336,42 @@ public class ExamenController {
 		}
 
 	}
+	
+	@GetMapping("/curso/{idcurso}/alumno/{idalumno}")
+	public ResponseEntity<?> CantidadExamenesPorUsuario(@PathVariable("idcurso") Integer idCurso, @PathVariable("idalumno") Integer idAlumno) {
+
+		List<ExamCursoAlumno> examxcurso = null;
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			examxcurso = service.ListarExamXCursoYAlumno(idCurso, idAlumno);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "Lista de examenes");
+		response.put("examenes", examxcurso);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/promedio/{idexamen}")
+	public ResponseEntity<?> PromedioPorCurso(@PathVariable("idexamen") Integer idExamen){
+		double promedio = 0;
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			promedio = service.PromedioPorExamen(idExamen);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "Promedio General por Examen");
+		response.put("promedio", promedio);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
 }

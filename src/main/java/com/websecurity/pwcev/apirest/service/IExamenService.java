@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCompleto;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCulminado;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
+import com.websecurity.pwcev.apirest.entidadmodelo.ExamCursoAlumno;
 import com.websecurity.pwcev.apirest.model.Examen;
 import com.websecurity.pwcev.apirest.model.Resultado;
 
@@ -23,4 +24,6 @@ public interface IExamenService{
 	Resultado registrarSolucion(DetalleExamenCulminado detalle);
 	Integer CantidadExamenesPorIdUsuario(Integer idUsuario);
 	List<Examen> listarExamenesPendPorIdUsuario(Integer idUsuario);
+	List<ExamCursoAlumno> ListarExamXCursoYAlumno(Integer idCurso, Integer idAlumno);
+	double PromedioPorExamen(Integer idExamen);
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.websecurity.pwcev.apirest.entidadmodelo.AlumnosCurso;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.Examen;
@@ -178,6 +179,42 @@ public class CursoController {
 
 		response.put("mensaje", "Listado de UNIs completo.");
 		return new ResponseEntity<List<String>>(unis, HttpStatus.OK);
+	}
+	
+	@GetMapping("/alumnos/{idcurso}")
+	public ResponseEntity<?> ListaAlumnosPorCurso(@PathVariable("idcurso") Integer idCurso){
+		List<AlumnosCurso> alumnos = null;
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			alumnos = service.ListarAlumnosPorCurso(idCurso);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "Lista de alumnos.");
+		response.put("alumnos", alumnos);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/promedio/{idcurso}")
+	public ResponseEntity<?> PromedioPorCurso(@PathVariable("idcurso") Integer idCurso){
+		double promedio = 0;
+		Map<String, Object> response = new HashMap<>();
+
+		try {
+			promedio = service.PromedioPorCurso(idCurso);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "Promedio General por Curso");
+		response.put("promedio", promedio);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
 
 }

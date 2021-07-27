@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCompleto;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCulminado;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
+import com.websecurity.pwcev.apirest.entidadmodelo.ExamCursoAlumno;
 import com.websecurity.pwcev.apirest.entidadmodelo.RespuestaExamen;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.DetalleCurso;
@@ -231,6 +232,7 @@ public class ExamenServiceImpl implements IExamenService {
 
 		Optional<Usuario> usuario;
 		Resultado resultado = new Resultado();
+		Calendar calendar = Calendar.getInstance();
 		Optional<Examen> examen;
 		float tiempoFuera;
 		float nota = 0;
@@ -260,6 +262,7 @@ public class ExamenServiceImpl implements IExamenService {
 		resultado.setIdResultado(null);
 		resultado.setNota(nota);
 		resultado.setTiempoFuera(tiempoFuera);
+		resultado.setFechaEnvio(calendar.getTime());
 		repoResul.save(resultado);
 
 		return resultado;
@@ -295,7 +298,7 @@ public class ExamenServiceImpl implements IExamenService {
 			}
 
 			for (Curso curso : cursos) {
-				List<Examen> examenesxCurso = repo.findByCursoIdCurso(curso.getIdCurso());
+				List<Examen> examenesxCurso = repo.ExamenesPendientes(idUsuario, curso.getIdCurso());
 				if (examenesxCurso.size() > 0) {
 					for (int i = 0; i < examenesxCurso.size(); i++) {
 
@@ -333,6 +336,59 @@ public class ExamenServiceImpl implements IExamenService {
 		}
 
 		return examenes;
+	}
+
+	@Override
+	public List<ExamCursoAlumno> ListarExamXCursoYAlumno(Integer idCurso, Integer idAlumno) {
+		
+		List<Examen> examenes =  new ArrayList<Examen>();
+		List<ExamCursoAlumno> examCursoAlumnos = new ArrayList<ExamCursoAlumno>();
+		int cantidad = 0;
+		
+		examenes = repo.findByCursoIdCurso(idCurso);
+		
+		for (Examen examen : examenes) {
+			Resultado resultado =  new Resultado();
+			cantidad = repo.ExisteResultado(idAlumno, examen.getIdExamen());
+			if (cantidad > 0 ) {
+				resultado = repoResul.findByExamenIdExamenAndUsuarioIdUsuario(examen.getIdExamen(), idAlumno);
+			}
+			
+			ExamCursoAlumno examCursoAlumno = new ExamCursoAlumno();
+			
+			
+			if (cantidad == 0) {
+				examCursoAlumno.setId_examen(examen.getIdExamen());
+				examCursoAlumno.setTitulo(examen.getTitulo());
+				examCursoAlumno.setFecha_inicio(examen.getFechaInicio());
+				examCursoAlumno.setTiempo_duracion(examen.getTiempoDuracion());
+				examCursoAlumno.setFecha_envio(null);
+				examCursoAlumno.setEstado(false);
+				examCursoAlumno.setTiempo_plagio(0);
+				examCursoAlumno.setNota(0);
+				
+			} else {
+				examCursoAlumno.setId_examen(examen.getIdExamen());
+				examCursoAlumno.setTitulo(examen.getTitulo());
+				examCursoAlumno.setFecha_inicio(examen.getFechaInicio());
+				examCursoAlumno.setTiempo_duracion(examen.getTiempoDuracion());
+				examCursoAlumno.setFecha_envio(resultado.getFechaEnvio());
+				examCursoAlumno.setEstado(resultado.getEstado());
+				examCursoAlumno.setTiempo_plagio(resultado.getTiempoFuera());
+				examCursoAlumno.setNota(resultado.getNota());
+
+			}
+
+			examCursoAlumnos.add(examCursoAlumno);
+		}
+		
+		return examCursoAlumnos;
+	}
+
+	@Override
+	public double PromedioPorExamen(Integer idExamen) {
+		// TODO Auto-generated method stub
+		return repo.PromedioPorExamen(idExamen);
 	}
 
 }

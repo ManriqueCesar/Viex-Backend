@@ -1,4 +1,4 @@
-package com.websecurity.pwcev.apirest.controller;
+	package com.websecurity.pwcev.apirest.controller;
 
 
 import java.util.HashMap;
@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.websecurity.pwcev.apirest.model.ResponseModel;
 import com.websecurity.pwcev.apirest.model.Usuario;
 import com.websecurity.pwcev.apirest.service.IUsuarioService;
 
@@ -25,14 +27,12 @@ public class UsuarioController {
 	
 	
 	@Autowired
-	private IUsuarioService service;
+	private IUsuarioService usuarioService;
 	
-	
-
 	@GetMapping
 	public List<Usuario> getUsuarios(){
 			
-			return service.listar();
+			return usuarioService.listar();
 	}
 	
 	/*@GetMapping("/{username}/{password}")
@@ -59,7 +59,7 @@ public class UsuarioController {
 	
 	@GetMapping("/{id}")
 	public Optional<Usuario> usuarioId(@PathVariable("id") int id) {
-		return service.buscarPorId(id);
+		return usuarioService.buscarPorId(id);
 	}
 	
 	@GetMapping("/email/{email}")
@@ -69,14 +69,14 @@ public class UsuarioController {
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
-			us = service.findByEmail(email);
+			us = usuarioService.findByEmail(email);
 		} catch (DataAccessException e) {
 			response.put("mensaje", "Error al realizar la consulta en la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		if (!service.existeUsuarioByEmail(email)) {
+		if (!usuarioService.existeUsuarioByEmail(email)) {
 			response.put("mensaje", "El usuario no existe con esas credenciales");
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
@@ -91,19 +91,27 @@ public class UsuarioController {
 		Map<String, Object> response = new HashMap<>();
 		
 		try {
-			us = service.findByEmailAndPassword(usuario.getEmail(), usuario.getPassword());
+			us = usuarioService.findByEmailAndPassword(usuario.getEmail(), usuario.getPassword());
 		} catch (DataAccessException e) {
 			response.put("mensaje", "Error al realizar la consulta en la base de datos");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
-		if (!service.existeUsuarioByEmail(usuario.getEmail())) {
+		if (!usuarioService.existeUsuarioByEmail(usuario.getEmail())) {
 			response.put("mensaje", "El usuario no existe con esas credenciales");
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Usuario>(us,HttpStatus.OK);
 				
 	}
+	
+	@PostMapping("/register")
+	public ResponseEntity<ResponseModel> save(@RequestBody Usuario usuario) {
+		ResponseModel response = usuarioService.save(usuario);
+		return new ResponseEntity<>(response, response.getHttpStatus());
+		 
+	}
+	
 
 }

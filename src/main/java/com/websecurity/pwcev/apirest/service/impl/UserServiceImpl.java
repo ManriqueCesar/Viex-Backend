@@ -3,10 +3,10 @@ package com.websecurity.pwcev.apirest.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 /*
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.websecurity.pwcev.apirest.model.Plan;
+import com.websecurity.pwcev.apirest.model.ResponseModel;
 import com.websecurity.pwcev.apirest.model.Rol;
 import com.websecurity.pwcev.apirest.model.Usuario;
 import com.websecurity.pwcev.apirest.repository.IUsuarioRepo;
@@ -28,8 +30,8 @@ public class UserServiceImpl implements IUsuarioService {
 	@Autowired
 	private IUsuarioRepo usuarioRepositorio;
 
-	private Logger logger = org.slf4j.LoggerFactory.getLogger(UserServiceImpl.class);
-
+	private final Logger LOGGER = Logger.getLogger(UserServiceImpl.class.getName());
+	
 	@Override
 	public List<Usuario> listar() {
 		List<Usuario> users = usuarioRepositorio.findAll();
@@ -111,6 +113,41 @@ public class UserServiceImpl implements IUsuarioService {
 		usuario.setDni(us.getDni());
 
 		return usuario;
+	}
+
+	@Override
+	public ResponseModel save(Usuario usuario) {
+		try {
+			System.out.println("------INSERTANDO NUEVO USUARIO------");
+			
+			Usuario user = new Usuario();
+			Plan plan = new Plan();
+			Rol rol = new Rol();
+			ArrayList<Rol> roles = new ArrayList<>();
+			
+			user.setNombre(usuario.getNombre());
+			user.setApellido(usuario.getApellido());
+			user.setPassword(usuario.getPassword());
+			user.setDni(usuario.getDni());
+			user.setEmail(usuario.getEmail());
+			user.setEnabled(true);
+			plan.setIdPlan(1);
+			
+			rol.setIdRol(2);
+			roles.add(rol);
+			roles.addAll(roles);
+			
+			user.setRoles(roles);
+			user.setPlan(plan);
+			
+			usuarioRepositorio.save(user);
+			
+			return new ResponseModel("Usuario creado correctamente", HttpStatus.OK);
+			
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			return new ResponseModel("Ocurrió un error al agregar usuario", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }

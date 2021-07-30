@@ -3,11 +3,14 @@ package com.websecurity.pwcev.apirest.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.websecurity.pwcev.apirest.model.ResponseModel;
 import com.websecurity.pwcev.apirest.model.Usuario;
 
 public interface IUsuarioService {
 
 	public List<Usuario> listar();
+	
+	public ResponseModel save(Usuario usuario);
 	
 	public Optional<Usuario> buscarPorId(int id);
 	

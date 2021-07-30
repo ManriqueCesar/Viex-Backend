@@ -21,10 +21,10 @@ public class Pago {
 	private Integer idPago;
 	
 	@Column(name = "ecommerce", nullable = false)
-	private Integer ecommerce;
+	private Long ecommerce;
 	
 	@Column(name = "visa", nullable = false)
-	private Integer visa;
+	private Long visa;
 	
 	@Column(name = "monto_total", nullable = false)
 	private Float montoTotal;
@@ -44,11 +44,11 @@ public class Pago {
 		this.idPago = idPago;
 	}
 	
-	public int getEcommerce() {
+	public Long getEcommerce() {
 		return ecommerce;
 	}
 
-	public void setEcommerce(int ecommerce) {
+	public void setEcommerce(Long ecommerce) {
 		this.ecommerce = ecommerce;
 	}
 	
@@ -60,11 +60,11 @@ public class Pago {
 		this.montoTotal = montoTotal;
 	}
 	
-	public int getVisa() {
+	public Long getVisa() {
 		return visa;
 	}
 
-	public void setVisa(int visa) {
+	public void setVisa(Long visa) {
 		this.visa = visa;
 	}
 	

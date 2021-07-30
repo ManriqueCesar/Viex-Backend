@@ -19,7 +19,7 @@ public class NumeroCompra {
 	private Long visa;
 	
 	@Column(name = "ecommerce")
-	private Integer ecommerce;
+	private Long ecommerce;
 	
 	public Integer getId() {
 		return id;
@@ -37,11 +37,11 @@ public class NumeroCompra {
 		this.visa = visa;
 	}
 	
-	public Integer getEcommerce() {
+	public Long getEcommerce() {
 		return ecommerce;
 	}
 	
-	public void setEcommerce(Integer ecommerce) {
+	public void setEcommerce(Long ecommerce) {
 		this.ecommerce = ecommerce;
 	}
 	

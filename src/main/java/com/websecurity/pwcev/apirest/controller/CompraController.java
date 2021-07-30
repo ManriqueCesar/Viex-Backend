@@ -53,14 +53,19 @@ public class CompraController {
 		
 		try {
 			nc = compraService.findById(id).get();
+			
+			nc.setEcommerce(nc.getEcommerce() + 1);
 			nc.setVisa(nc.getVisa() + 1);
 			
 			numCompra = compraService.modificar(nc);
 			
 			String numVisa = String.format("1%0" + 11 + "d", numCompra.getVisa());
-			Long n = Long.parseLong(numVisa);
-					
+			String ecommerce = String.format("1%0" + 11 + "d", numCompra.getEcommerce());
+			Long n = Long.parseLong(numVisa),
+					e = Long.parseLong(ecommerce);
+
 			numCompra.setVisa(n);
+			numCompra.setEcommerce(e);
 		} catch (DataAccessException e) {
 			response.put("mensaje", "Error al realizar el update en la base de datos.");
 			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));

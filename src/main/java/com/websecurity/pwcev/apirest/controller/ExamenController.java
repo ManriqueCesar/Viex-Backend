@@ -338,7 +338,7 @@ public class ExamenController {
 	}
 	
 	@GetMapping("/curso/{idcurso}/alumno/{idalumno}")
-	public ResponseEntity<?> CantidadExamenesPorUsuario(@PathVariable("idcurso") Integer idCurso, @PathVariable("idalumno") Integer idAlumno) {
+	public ResponseEntity<?> ListaExamXCursoYAlumno(@PathVariable("idcurso") Integer idCurso, @PathVariable("idalumno") Integer idAlumno) {
 
 		List<ExamCursoAlumno> examxcurso = null;
 		Map<String, Object> response = new HashMap<>();

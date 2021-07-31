@@ -1,14 +1,18 @@
 package com.websecurity.pwcev.apirest.service.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.criterion.BetweenExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.websecurity.pwcev.apirest.entidadmodelo.AlumnosCurso;
+import com.websecurity.pwcev.apirest.entidadmodelo.CursosPeriodo;
+import com.websecurity.pwcev.apirest.entidadmodelo.PromedioPeriodo;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.DetalleCurso;
 import com.websecurity.pwcev.apirest.model.Examen;
@@ -132,5 +136,71 @@ public class CursoServiceImpl implements ICursoService {
 		
 		return repo.PromedioPorCurso(idCurso);
 	}
+
+	@Override
+	public List<CursosPeriodo> ListaCursosPeriodo(Integer idAlumno, String periodo) {
+		
+		List<Curso> cursos =  new ArrayList<Curso>();
+		List<CursosPeriodo> listacursos = new ArrayList<CursosPeriodo>();
+		
+		cursos = repo.ListCursosPeriodo(idAlumno, periodo);
+		
+		for (Curso curso : cursos) {
+			CursosPeriodo curperiodo = null;
+			curperiodo = new CursosPeriodo(
+					curso.getNombre(),
+					repo.PromedioPorCurso(curso.getIdCurso()));
+			listacursos.add(curperiodo);
+		}
+		
+		return listacursos;
+	}
+
+	@Override
+	public double PromedioPeriodoActual(Integer idAlumno) {
+
+		double promedio = 0;
+		String periodo = "";
+		Calendar calendar = Calendar.getInstance();
+		int anio = 0;
+		String per = "";
+		
+		anio = calendar.getTime().getYear() +1900;
+		
+		if (calendar.getTime().getMonth() > 6 ) {
+			periodo = ""+anio+"-2";
+		}else if (calendar.getTime().getMonth() == 1 || calendar.getTime().getMonth() == 2 ) {
+			periodo = ""+anio+"-0";
+		}
+		else {
+			periodo = ""+anio+"-1";
+		}
+
+		promedio = repo.PromedioPeriodo(idAlumno, periodo);
+		return promedio;
+	}
+
+	@Override
+	public List<PromedioPeriodo> PromediosPeriodo(Integer idAlumno) {
+
+		List<PromedioPeriodo> listapromper = new ArrayList<PromedioPeriodo>();
+		double promedio = 0;
+		
+		List<String> lista = repo.ListPeriodosCursosAlumno(idAlumno);
+		
+		for (String lis : lista) {
+			
+			PromedioPeriodo promper = null;
+			
+			promper = new PromedioPeriodo(
+					lis,
+					promedio = repo.PromedioPeriodo(idAlumno, lis));
+			listapromper.add(promper);
+		}
+		
+		return listapromper;
+	}
+	
+	
 
 }

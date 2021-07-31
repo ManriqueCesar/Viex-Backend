@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.websecurity.pwcev.apirest.entidadmodelo.CursosPeriodo;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.Usuario;
 
@@ -67,4 +68,32 @@ public interface ICursoRepo  extends JpaRepository<Curso, Integer>{
 			+ " and id_examen in (select id_examen from examen where id_curso = ?1 and status = 1)", 
 		       nativeQuery = true)
 	double PromedioPorCurso(int idCurso);
+
+	
+	@Query(value = " select * from curso\r\n"
+			+ "where id_curso in (select id_curso from detallecurso\r\n"
+			+ "where id_usuario = ?1 )\r\n"
+			+ "and periodo = ?2 \r\n"
+			+ " ", 
+		       nativeQuery = true)
+	List<Curso> ListCursosPeriodo(int idAlumno, String periodo);
+	
+	@Query(value = "select COALESCE(avg(nota),0) from resultado\r\n"
+			+ "where id_usuario = ?1 \r\n"
+			+ "and estado is true\r\n"
+			+ "and id_examen in \r\n"
+			+ "(select id_examen from examen \r\n"
+			+ " where id_curso in (select id_curso from curso\r\n"
+			+ "where periodo = ?2 )\r\n"
+			+ " and status = 1)", 
+		       nativeQuery = true)
+	double PromedioPeriodo(int idAlumno, String periodo);
+	
+	@Query(value = " select distinct periodo from curso\r\n"
+			+ "where id_curso in (select id_curso from detallecurso\r\n"
+			+ "where id_usuario = ?1 )",
+		       nativeQuery = true)
+	List<String> ListPeriodosCursosAlumno(int idAlumno);
+	
+
 }

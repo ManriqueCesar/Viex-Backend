@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.websecurity.pwcev.apirest.entidadmodelo.AlumnosCurso;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
+import com.websecurity.pwcev.apirest.entidadmodelo.PromedioPeriodo;
+import com.websecurity.pwcev.apirest.entidadmodelo.CursosPeriodo;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.Examen;
 import com.websecurity.pwcev.apirest.service.ICursoService;
@@ -216,5 +218,63 @@ public class CursoController {
 		response.put("promedio", promedio);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
+	
+	@GetMapping("/periodo/{idAlumno}/{periodo}")
+	public ResponseEntity<?> ListaCursosPeriodo(@PathVariable("idAlumno") Integer idAlumno, @PathVariable("periodo") String periodo){
+		
+		Map<String, Object> response = new HashMap<>();
+		List<CursosPeriodo> cursosperido = null;
+		
+		try {
+			cursosperido = service.ListaCursosPeriodo(idAlumno, periodo);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		
+		response.put("lista", cursosperido);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/periodo/{idAlumno}")
+	public ResponseEntity<?> ListaCursosPeriodo(@PathVariable("idAlumno") Integer idAlumno){
+		
+		Map<String, Object> response = new HashMap<>();
+		double promedio = 0;
+		
+		try {
+			promedio = service.PromedioPeriodoActual(idAlumno);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		
+		response.put("promedio", promedio);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/periodo/promedios/{idAlumno}")
+	public ResponseEntity<?> ListaPromediosPeriodo(@PathVariable("idAlumno") Integer idAlumno){
+		
+		Map<String, Object> response = new HashMap<>();
+		List<PromedioPeriodo> promediosperio = null;
+		
+		try {
+			promediosperio = service.PromediosPeriodo(idAlumno);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		
+		response.put("lista", promediosperio);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+
 
 }

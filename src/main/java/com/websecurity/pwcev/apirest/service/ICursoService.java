@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.websecurity.pwcev.apirest.entidadmodelo.AlumnosCurso;
+import com.websecurity.pwcev.apirest.entidadmodelo.CursosPeriodo;
+import com.websecurity.pwcev.apirest.entidadmodelo.PromedioPeriodo;
 import com.websecurity.pwcev.apirest.model.Curso;
 
 public interface ICursoService {
@@ -19,4 +21,7 @@ public interface ICursoService {
 	List<String> ListarUNIsExamenResuelto();
 	List<AlumnosCurso> ListarAlumnosPorCurso(Integer idCurso);
 	double PromedioPorCurso(Integer idCurso);
+	List<CursosPeriodo> ListaCursosPeriodo(Integer idAlumno, String periodo);
+	double PromedioPeriodoActual(Integer idAlumno);
+	List<PromedioPeriodo> PromediosPeriodo(Integer idAlumno);
 }

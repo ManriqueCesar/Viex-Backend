@@ -135,7 +135,6 @@ public class UserServiceImpl implements IUsuarioService {
 			
 			rol.setIdRol(2);
 			roles.add(rol);
-			roles.addAll(roles);
 			
 			user.setRoles(roles);
 			user.setPlan(plan);

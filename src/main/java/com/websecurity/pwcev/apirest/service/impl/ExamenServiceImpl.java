@@ -308,6 +308,9 @@ public class ExamenServiceImpl implements IExamenService {
 						calendar.setTime(fecha);
 						calendar.add(Calendar.MINUTE, (int) examenesxCurso.get(i).getTiempoDuracion());
 						fecha = calendar.getTime();
+						
+						System.out.println(cal.getTime());
+						System.out.println(fecha);
 
 						if (fecha.before(cal.getTime()) && examenesxCurso.get(i).getStatus() == 0 ) {
 							Examen examen = new Examen();

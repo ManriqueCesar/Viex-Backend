@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -28,6 +29,7 @@ import com.websecurity.pwcev.apirest.model.Examen;
 import com.websecurity.pwcev.apirest.model.Pregunta;
 import com.websecurity.pwcev.apirest.model.Respuesta;
 import com.websecurity.pwcev.apirest.model.Resultado;
+import com.websecurity.pwcev.apirest.model.Usuario;
 import com.websecurity.pwcev.apirest.service.IExamenService;
 import com.websecurity.pwcev.apirest.service.IPreguntaService;
 import com.websecurity.pwcev.apirest.service.IRespuestaService;
@@ -95,8 +97,12 @@ public class ExamenController {
 	 * ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED); }
 	 */
 
-	@PostMapping
-	public ResponseEntity<?> registrar(@RequestBody DetalleRegistroExamen detalle) {
+	@PostMapping("/usuario/{id}")
+	public ResponseEntity<?> registrar(@RequestBody DetalleRegistroExamen detalle, @PathVariable("id") int idUsuario) {
+		
+		int cantExamenes = service.CantidadExamenesPorIdUsuario(idUsuario); //cantidad examenes
+		Optional<Usuario> usuario = usuarioService.buscarPorId(idUsuario); //Usuario - de aca sacas el plan
+		
 		Examen examen = null;
 		Respuesta respuesta = null;
 		Pregunta pregunta = null;
@@ -107,55 +113,71 @@ public class ExamenController {
 		int aux = 0;
 
 		Map<String, Object> response = new HashMap<>();
-
-		try {
-
-			ex = detalle.getExamen();
-			examen = service.registrar(ex);
-
+		
+		if(usuario.get().getPlan().getIdPlan() == 1 && cantExamenes > 5) {
+			
+			response.put("mensaje", "Error al crear el examen. El usuario ya llegó al limite de los exámenes permitidos en"
+					+ " la membresía gratuita");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			
+		} else {
+			
 			try {
-				pre = detalle.getPreguntas();
 
-				for (Pregunta pregta : pre) {
-					pregta.setExamen(examen);
-					pregunta = pre_service.registrar(pregta);
+				ex = detalle.getExamen();
+				examen = service.registrar(ex);
 
-					try {
+				try {
+					pre = detalle.getPreguntas();
 
-						res = detalle.getRespuestas();
+					for (Pregunta pregta : pre) {
+						pregta.setExamen(examen);
+						pregunta = pre_service.registrar(pregta);
 
-						for (int i = cont; i < res.length && aux != 4; i++) {
-							Respuesta respta = res[i];
-							respta.setPregunta(pregunta);
-							respuesta = res_service.registrar(respta);
-							aux = aux + 1;
+						try {
+
+							res = detalle.getRespuestas();
+
+							for (int i = cont; i < res.length && aux != 4; i++) {
+								Respuesta respta = res[i];
+								respta.setPregunta(pregunta);
+								respuesta = res_service.registrar(respta);
+								aux = aux + 1;
+							}
+							aux = 0;
+							cont = cont + 4;
+
+						} catch (DataAccessException e1) {
+							response.put("mensaje", "Error al insertar respuestas en base de datos.");
+							response.put("error",
+									e1.getMessage().concat(": ").concat(e1.getMostSpecificCause().getMessage()));
+							return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 						}
-						aux = 0;
-						cont = cont + 4;
-
-					} catch (DataAccessException e1) {
-						response.put("mensaje", "Error al insertar respuestas en base de datos.");
-						response.put("error",
-								e1.getMessage().concat(": ").concat(e1.getMostSpecificCause().getMessage()));
-						return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 					}
+
+				} catch (DataAccessException e2) {
+					response.put("mensaje", "Error al insertar preguntas en base de datos.");
+					response.put("error", e2.getMessage().concat(": ").concat(e2.getMostSpecificCause().getMessage()));
+					return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 
 			} catch (DataAccessException e2) {
-				response.put("mensaje", "Error al insertar preguntas en base de datos.");
+				response.put("mensaje", "Error al insertar examen en base de datos.");
 				response.put("error", e2.getMessage().concat(": ").concat(e2.getMostSpecificCause().getMessage()));
 				return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-
-		} catch (DataAccessException e2) {
-			response.put("mensaje", "Error al insertar examen en base de datos.");
-			response.put("error", e2.getMessage().concat(": ").concat(e2.getMostSpecificCause().getMessage()));
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			
+			response.put("mensaje", "El examen ha sido creado con éxito!");
+			response.put("examen", examen);
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 		}
-
-		response.put("mensaje", "El examen ha sido creado con éxito!");
-		response.put("examen", examen);
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+		
+		
+		//Si el id de plan es 1 (free), solo 5 examenes max, si es 2 (premium), que permita crear ilimitado
+		
+		/* if(idPlan == 2) { //Logica } else if(idPlan == 1 && cantExamenes > 5) { response.put("El plan gratuito no
+		 * puede crear mas de 5 examenes"); } */
+		
 	}
 
 	@PutMapping

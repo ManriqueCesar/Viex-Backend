@@ -24,6 +24,7 @@ import com.websecurity.pwcev.apirest.entidadmodelo.PromedioPeriodo;
 import com.websecurity.pwcev.apirest.entidadmodelo.CursosPeriodo;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.Examen;
+import com.websecurity.pwcev.apirest.model.Usuario;
 import com.websecurity.pwcev.apirest.service.ICursoService;
 import com.websecurity.pwcev.apirest.service.IUsuarioService;
 
@@ -64,7 +65,7 @@ public class CursoController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> registrar(@RequestBody Curso cur) {
+	public ResponseEntity<?> registrar(@RequestBody Curso cur, @PathVariable("id") int idUsuario) {
 		Curso curso = null;
 		Map<String, Object> response = new HashMap<>();
 

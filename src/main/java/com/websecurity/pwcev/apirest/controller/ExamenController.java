@@ -118,7 +118,8 @@ public class ExamenController {
 			
 			response.put("mensaje", "Error al crear el examen. El usuario ya llegó al limite de los exámenes permitidos en"
 					+ " la membresía gratuita");
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			response.put("status", HttpStatus.UNAUTHORIZED.value());
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.UNAUTHORIZED);
 			
 		} else {
 			

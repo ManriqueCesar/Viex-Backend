@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.websecurity.pwcev.apirest.entidadmodelo.PromedioAlumno;
 import com.websecurity.pwcev.apirest.model.Resultado;
 import com.websecurity.pwcev.apirest.service.IExamenService;
 import com.websecurity.pwcev.apirest.service.IResultadoService;
@@ -107,6 +108,24 @@ public class ResultadoController {
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Resultado>(resultados,HttpStatus.OK);
+				
+	}
+	
+	@GetMapping("/promedios")
+	public ResponseEntity<?> listarPromedios() {
+		
+		List<PromedioAlumno> promedios = null;
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			promedios = service.ListarPromedios();
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la consulta en la base de datos");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+		return new ResponseEntity<List<PromedioAlumno>>(promedios,HttpStatus.OK);
 				
 	}
 }

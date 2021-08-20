@@ -149,4 +149,9 @@ public class UserServiceImpl implements IUsuarioService {
 		}
 	}
 
+	@Override
+	public void actualizarMembresiaUsuario(int idUsuario, int idPlan) {
+		usuarioRepositorio.actualizarMembresiaUsuario(idUsuario, idPlan);	
+	}
+
 }

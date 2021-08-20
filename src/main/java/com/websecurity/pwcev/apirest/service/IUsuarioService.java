@@ -22,4 +22,6 @@ public interface IUsuarioService {
 	public boolean existeUsuarioById(Integer id);
 	
 	public boolean validarRol(int idUsuario, String rol);
+	
+	public void actualizarMembresiaUsuario(int idUsuario, int idPlan);
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.websecurity.pwcev.apirest.model.Pago;
+import com.websecurity.pwcev.apirest.model.Plan;
 
 public interface IPagoRepo extends JpaRepository<Pago, Integer>{
 	

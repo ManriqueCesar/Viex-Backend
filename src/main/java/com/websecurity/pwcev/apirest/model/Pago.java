@@ -32,6 +32,15 @@ public class Pago {
 	@Column(name = "fecha_pago", nullable = false)
 	private Date fechaPago;
 	
+	@Column(name = "fecha_fin", nullable = false)
+	private Date fechaFin;
+	
+	@Column(name = "meses", nullable = false)
+	private int meses;
+	
+	@Column(name = "id_plan", nullable = false)
+	private int idPlan; //Plan nuevo
+	
 	@ManyToOne
 	@JoinColumn(name = "id_usuario", nullable = false, foreignKey = @ForeignKey(name = "fk_pago_usuario"))
 	private Usuario usuario;
@@ -76,12 +85,36 @@ public class Pago {
 		this.fechaPago = fechaPago;
 	}
 	
+	public Date getFechaFin() {
+		return fechaFin;
+	}
+
+	public void setFechaFin(Date fechaFin) {
+		this.fechaFin = fechaFin;
+	}
+	
 	public Usuario getUsuario() {
 		return usuario;
 	}
 
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+	
+	public int getMeses() {
+		return meses;
+	}
+
+	public void setMeses(int meses) {
+		this.meses = meses;
+	}
+	
+	public int getIdPlan() {
+		return idPlan;
+	}
+
+	public void setIdPlan(int idPlan) {
+		this.idPlan = idPlan;
 	}
 	
 }

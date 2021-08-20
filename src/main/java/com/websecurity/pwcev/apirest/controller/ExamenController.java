@@ -96,12 +96,16 @@ public class ExamenController {
 	 * response.put("examen",examen); return new
 	 * ResponseEntity<Map<String,Object>>(response, HttpStatus.CREATED); }
 	 */
-
+	
+	
 	@PostMapping("/usuario/{id}")
 	public ResponseEntity<?> registrar(@RequestBody DetalleRegistroExamen detalle, @PathVariable("id") int idUsuario) {
 		
 		int cantExamenes = service.CantidadExamenesPorIdUsuario(idUsuario); //cantidad examenes
+		
 		Optional<Usuario> usuario = usuarioService.buscarPorId(idUsuario); //Usuario - de aca sacas el plan
+		System.out.println(cantExamenes + " " + usuario.get().getPlan().getIdPlan());
+		
 		
 		Examen examen = null;
 		Respuesta respuesta = null;
@@ -114,7 +118,7 @@ public class ExamenController {
 
 		Map<String, Object> response = new HashMap<>();
 		
-		if(usuario.get().getPlan().getIdPlan() == 1 && cantExamenes > 5) {
+		if(usuario.get().getPlan().getIdPlan() == 1 && cantExamenes >= 5) {
 			
 			response.put("mensaje", "Error al crear el examen. El usuario ya llegó al limite de los exámenes permitidos en"
 					+ " la membresía gratuita");

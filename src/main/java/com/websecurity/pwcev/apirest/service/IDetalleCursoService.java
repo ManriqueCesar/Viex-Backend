@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.websecurity.pwcev.apirest.entidadmodelo.CursoModelo;
+import com.websecurity.pwcev.apirest.entidadmodelo.CursoModeloProm;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleCursoModelo;
 import com.websecurity.pwcev.apirest.model.DetalleCurso;
 import com.websecurity.pwcev.apirest.model.Usuario;
@@ -19,4 +20,5 @@ public interface IDetalleCursoService {
 	List<Usuario> listarAlumnosPorCurso(Integer idCurso);
 	public boolean existeAlumnoEnCurso(Integer idCurso, Integer idUsuario);
 	DetalleCurso BuscarXCursoUsuario(Integer idCurso, Integer idUsuario);
+	List<CursoModeloProm> listarCursosPromePorIdUsuario(Integer idUsuario);
 }

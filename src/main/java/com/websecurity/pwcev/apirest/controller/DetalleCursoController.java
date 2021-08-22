@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.websecurity.pwcev.apirest.entidadmodelo.CursoAlumno;
 import com.websecurity.pwcev.apirest.entidadmodelo.CursoModelo;
+import com.websecurity.pwcev.apirest.entidadmodelo.CursoModeloProm;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleCursoModelo;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.DetalleCurso;
@@ -198,6 +199,29 @@ public class DetalleCursoController {
 			
 		response.put("El alumno ha sido eliminado del curso con éxito!", usuario);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/usuario/promedio/{idusuario}")
+	public ResponseEntity<?> listarCursosPorUsuarioMProm(@PathVariable("idusuario") Integer idUsuario) {
+
+		List<CursoModeloProm> cursos = null;
+		Map<String, Object> response = new HashMap<>();
+
+		if (!usuarioService.existeUsuarioById(idUsuario)) {
+			response.put("mensaje", "El usuario no existe con esas credenciales");
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+		}
+		
+		try {
+			cursos = service.listarCursosPromePorIdUsuario(idUsuario);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al realizar la consulta en la base de datos");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		return new ResponseEntity<List<CursoModeloProm>>(cursos, HttpStatus.OK);
+
 	}
 
 

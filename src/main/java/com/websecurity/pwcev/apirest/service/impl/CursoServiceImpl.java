@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.websecurity.pwcev.apirest.entidadmodelo.AlumnosCurso;
 import com.websecurity.pwcev.apirest.entidadmodelo.CursosPeriodo;
+import com.websecurity.pwcev.apirest.entidadmodelo.DetallesCurso;
 import com.websecurity.pwcev.apirest.entidadmodelo.PromedioPeriodo;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.DetalleCurso;
@@ -36,13 +37,13 @@ public class CursoServiceImpl implements ICursoService {
 
 	@Autowired
 	private ExamenServiceImpl servExa;
-	
+
 	@Autowired
 	private UserServiceImpl servUsu;
 
 	@Autowired
 	private IDetalleCursoRepo repoDC;
-	
+
 	@Autowired
 	private IUsuarioRepo repoUs;
 
@@ -105,54 +106,50 @@ public class CursoServiceImpl implements ICursoService {
 	}
 
 	@Override
-	public List<AlumnosCurso> ListarAlumnosPorCurso( Integer id_curso) {
+	public List<AlumnosCurso> ListarAlumnosPorCurso(Integer id_curso) {
 		List<AlumnosCurso> alumnoscurso = new ArrayList<AlumnosCurso>();
-		List<DetalleCurso> detalleCurso =  new ArrayList<DetalleCurso>();
-		
+		List<DetalleCurso> detalleCurso = new ArrayList<DetalleCurso>();
+
 		detalleCurso = repoDC.findByCursoIdCurso(id_curso);
-		
+
 		for (DetalleCurso detail : detalleCurso) {
-			
+
 			if (servUsu.validarRol(detail.getUsuario().getIdUsuario(), "ROLE_PROF")) {
 				continue;
 			}
-			
-			AlumnosCurso alumCurso =  new AlumnosCurso(
-					detail.getUsuario().getIdUsuario(), 
-					detail.getUsuario().getNombre(),
-					detail.getUsuario().getApellido(), 
-					repo.PromedioPorAlumno(detail.getUsuario().getIdUsuario(), id_curso), 
-					repo.CantExamAprob(detail.getUsuario().getIdUsuario(), id_curso), 
-					repo.CantExamDesaprob(detail.getUsuario().getIdUsuario(), id_curso), 
+
+			AlumnosCurso alumCurso = new AlumnosCurso(detail.getUsuario().getIdUsuario(),
+					detail.getUsuario().getNombre(), detail.getUsuario().getApellido(),
+					repo.PromedioPorAlumno(detail.getUsuario().getIdUsuario(), id_curso),
+					repo.CantExamAprob(detail.getUsuario().getIdUsuario(), id_curso),
+					repo.CantExamDesaprob(detail.getUsuario().getIdUsuario(), id_curso),
 					repo.CantExamAusente(detail.getUsuario().getIdUsuario(), id_curso));
 			alumnoscurso.add(alumCurso);
 		}
-		
+
 		return alumnoscurso;
 	}
 
 	@Override
 	public double PromedioPorCurso(Integer idCurso) {
-		
+
 		return repo.PromedioPorCurso(idCurso);
 	}
 
 	@Override
 	public List<CursosPeriodo> ListaCursosPeriodo(Integer idAlumno, String periodo) {
-		
-		List<Curso> cursos =  new ArrayList<Curso>();
+
+		List<Curso> cursos = new ArrayList<Curso>();
 		List<CursosPeriodo> listacursos = new ArrayList<CursosPeriodo>();
-		
+
 		cursos = repo.ListCursosPeriodo(idAlumno, periodo);
-		
+
 		for (Curso curso : cursos) {
 			CursosPeriodo curperiodo = null;
-			curperiodo = new CursosPeriodo(
-					curso.getNombre(),
-					repo.PromedioPorCurso(curso.getIdCurso()));
+			curperiodo = new CursosPeriodo(curso.getNombre(), repo.PromedioPorCurso(curso.getIdCurso()));
 			listacursos.add(curperiodo);
 		}
-		
+
 		return listacursos;
 	}
 
@@ -164,16 +161,15 @@ public class CursoServiceImpl implements ICursoService {
 		Calendar calendar = Calendar.getInstance();
 		int anio = 0;
 		String per = "";
-		
-		anio = calendar.getTime().getYear() +1900;
-		
-		if (calendar.getTime().getMonth() > 6 ) {
-			periodo = ""+anio+"-2";
-		}else if (calendar.getTime().getMonth() == 1 || calendar.getTime().getMonth() == 2 ) {
-			periodo = ""+anio+"-0";
-		}
-		else {
-			periodo = ""+anio+"-1";
+
+		anio = calendar.getTime().getYear() + 1900;
+
+		if (calendar.getTime().getMonth() > 6) {
+			periodo = "" + anio + "-2";
+		} else if (calendar.getTime().getMonth() == 1 || calendar.getTime().getMonth() == 2) {
+			periodo = "" + anio + "-0";
+		} else {
+			periodo = "" + anio + "-1";
 		}
 
 		promedio = repo.PromedioPeriodo(idAlumno, periodo);
@@ -185,22 +181,54 @@ public class CursoServiceImpl implements ICursoService {
 
 		List<PromedioPeriodo> listapromper = new ArrayList<PromedioPeriodo>();
 		double promedio = 0;
-		
+
 		List<String> lista = repo.ListPeriodosCursosAlumno(idAlumno);
-		
+
 		for (String lis : lista) {
-			
+
 			PromedioPeriodo promper = null;
-			
-			promper = new PromedioPeriodo(
-					lis,
-					promedio = repo.PromedioPeriodo(idAlumno, lis));
+
+			promper = new PromedioPeriodo(lis, promedio = repo.PromedioPeriodo(idAlumno, lis));
 			listapromper.add(promper);
 		}
-		
+
 		return listapromper;
 	}
-	
-	
+
+	@Override
+	public DetallesCurso DetallesCursoDesv(Integer idCurso) {
+
+		DetallesCurso curso = null;
+		List<Double> notas = new ArrayList<Double>();
+		
+		notas = repo.NotasCurso(idCurso);
+
+		curso = new DetallesCurso(
+				repo.CantAlumnosCurso(idCurso), 
+				repo.PromedioPorCurso(idCurso), 
+				DesvEstandar(repo.PromedioPorCurso(idCurso),notas),
+				repo.CantAlumnosAprobCurso(idCurso), 
+				repo.CantAlumnosDesAprobCurso(idCurso));
+
+		return curso;
+	}
+
+	public double DesvEstandar(double promedio, List<Double> notas) {
+
+		double desvEstandar = 0;
+		double varianza = 0.0;
+		
+		for (double nota : notas) {
+			double rango;
+			rango = Math.pow(nota - promedio, 2f);
+			varianza = varianza + rango;
+		}
+			
+
+		varianza = varianza / 10f;
+		desvEstandar = Math.sqrt(varianza);
+
+		return desvEstandar;
+	}
 
 }

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.websecurity.pwcev.apirest.entidadmodelo.AlumnosCurso;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
+import com.websecurity.pwcev.apirest.entidadmodelo.DetallesCurso;
 import com.websecurity.pwcev.apirest.entidadmodelo.PromedioPeriodo;
 import com.websecurity.pwcev.apirest.entidadmodelo.CursosPeriodo;
 import com.websecurity.pwcev.apirest.model.Curso;
@@ -275,6 +276,23 @@ public class CursoController {
 		
 		response.put("lista", promediosperio);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping("/detalle/{idCurso}")
+	public ResponseEntity<?> DetalleCurso(@PathVariable("idCurso") Integer idCurso){
+		
+		Map<String, Object> response = new HashMap<>();
+		DetallesCurso curso = null;
+		
+		try {
+			curso = service.DetallesCursoDesv(idCurso);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		return new ResponseEntity<DetallesCurso>(curso, HttpStatus.OK);
 	}
 
 

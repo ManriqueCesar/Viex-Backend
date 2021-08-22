@@ -7,6 +7,7 @@ import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCompleto;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCulminado;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
 import com.websecurity.pwcev.apirest.entidadmodelo.ExamCursoAlumno;
+import com.websecurity.pwcev.apirest.entidadmodelo.ExamenesPromedio;
 import com.websecurity.pwcev.apirest.model.Examen;
 import com.websecurity.pwcev.apirest.model.Resultado;
 
@@ -26,4 +27,5 @@ public interface IExamenService{
 	List<Examen> listarExamenesPendPorIdUsuario(Integer idUsuario);
 	List<ExamCursoAlumno> ListarExamXCursoYAlumno(Integer idCurso, Integer idAlumno);
 	double PromedioPorExamen(Integer idExamen);
+	List<ExamenesPromedio> ListaExamenesPromedio(Integer idCurso);
 }

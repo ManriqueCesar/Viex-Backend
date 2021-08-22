@@ -18,6 +18,7 @@ import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCompleto;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCulminado;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
 import com.websecurity.pwcev.apirest.entidadmodelo.ExamCursoAlumno;
+import com.websecurity.pwcev.apirest.entidadmodelo.ExamenesPromedio;
 import com.websecurity.pwcev.apirest.entidadmodelo.RespuestaExamen;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.DetalleCurso;
@@ -392,6 +393,52 @@ public class ExamenServiceImpl implements IExamenService {
 	public double PromedioPorExamen(Integer idExamen) {
 		// TODO Auto-generated method stub
 		return repo.PromedioPorExamen(idExamen);
+	}
+
+	@Override
+	public List<ExamenesPromedio> ListaExamenesPromedio(Integer idCurso) {
+		
+		List<ExamenesPromedio> examenespro =  new ArrayList<ExamenesPromedio>();
+		List<Examen> examenes = new ArrayList<Examen>();
+		ExamenesPromedio exaPro = null;
+		
+		examenes =  repo.findByCursoIdCurso(idCurso);
+		
+		for (Examen examen : examenes) {
+			
+			exaPro =  new ExamenesPromedio(
+					examen.getTitulo(), 
+					examen.getFechaInicio(), 
+					repo.PromedioPorExamen(examen.getIdExamen()), 
+					PromedioMayorPorCurso(idCurso)
+					);
+			
+			examenespro.add(exaPro);
+		}
+		
+		return examenespro;
+	}
+	
+	
+	public double PromedioMayorPorCurso(Integer idCurso) {
+		
+		List<Examen> examenes = new ArrayList<Examen>();
+		double promedio = 0;
+		double promedioMayor = 0;
+		
+		examenes = repo.findByCursoIdCurso(idCurso);
+		
+		for (Examen examen : examenes) {
+			
+			promedio = repo.PromedioPorExamen(examen.getIdExamen());
+			
+			if (promedioMayor < promedio) {
+				promedioMayor = promedio;
+			}
+			
+		}
+		
+		return promedioMayor;
 	}
 
 }

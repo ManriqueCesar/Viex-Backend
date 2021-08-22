@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.websecurity.pwcev.apirest.entidadmodelo.CursoModelo;
+import com.websecurity.pwcev.apirest.entidadmodelo.CursoModeloProm;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleCursoModelo;
 import com.websecurity.pwcev.apirest.model.Curso;
 import com.websecurity.pwcev.apirest.model.DetalleCurso;
 import com.websecurity.pwcev.apirest.model.Usuario;
+import com.websecurity.pwcev.apirest.repository.ICursoRepo;
 import com.websecurity.pwcev.apirest.repository.IDetalleCursoRepo;
 import com.websecurity.pwcev.apirest.service.ICursoService;
 import com.websecurity.pwcev.apirest.service.IDetalleCursoService;
@@ -21,6 +23,8 @@ public class DetalleCursoServiceImpl implements IDetalleCursoService {
 
 	@Autowired
 	private IDetalleCursoRepo repo;
+	@Autowired
+	private ICursoRepo repoCurso;
 	@Autowired
 	private IUsuarioService usuarioService;
 	@Autowired
@@ -197,6 +201,43 @@ public class DetalleCursoServiceImpl implements IDetalleCursoService {
 	@Override
 	public boolean existeAlumnoEnCurso(Integer idCurso, Integer idUsuario) {
 		return repo.existsByCursoIdCursoAndUsuarioIdUsuario(idCurso, idUsuario);
+	}
+
+	@Override
+	public List<CursoModeloProm> listarCursosPromePorIdUsuario(Integer idUsuario) {
+		List<DetalleCurso> detalleCursos = repo.findByUsuarioIdUsuario(idUsuario);
+		List<CursoModeloProm> cursos = new ArrayList<CursoModeloProm>();
+		String profe="";
+		
+		if (detalleCursos.size()>0) {
+ 			profe=detalleCursos.get(0).getUsuario().getNombre() +" "+ detalleCursos.get(0).getUsuario().getApellido();
+			boolean esprofe = usuarioService.validarRol(idUsuario, "ROLE_PROF");
+			for (int i = 0; i < detalleCursos.size(); i++) {
+				CursoModeloProm curso = new CursoModeloProm(
+						detalleCursos.get(i).getCurso().getIdCurso(), 
+						detalleCursos.get(i).getCurso().getCentroEstudios(), 
+						detalleCursos.get(i).getCurso().getEAP(), 
+						detalleCursos.get(i).getCurso().getCurso(), 
+						detalleCursos.get(i).getCurso().getPeriodo(), 
+						"", 
+						repoCurso.PromedioPorAlumno(idUsuario, detalleCursos.get(i).getCurso().getIdCurso())
+						);
+						
+						
+				if(!esprofe) {
+					profe =obtenrProfesor(detalleCursos.get(i).getCurso().getIdCurso());
+					curso.setProfesor(profe);
+				}else {
+					
+					curso.setProfesor(profe);
+				}
+				
+				cursos.add(curso);
+			}
+		}
+		System.out.println("cursos");
+		System.out.println(cursos);
+		return cursos;
 	}
 
 }

@@ -95,5 +95,32 @@ public interface ICursoRepo  extends JpaRepository<Curso, Integer>{
 		       nativeQuery = true)
 	List<String> ListPeriodosCursosAlumno(int idAlumno);
 	
+	@Query(value = "select count(*) from resultado\r\n"
+			+ "where id_examen in (select id_examen from examen where id_curso = ?1)\r\n"
+			+ "and nota >= 10.5\r\n"
+			+ "and estado = true", 
+		       nativeQuery = true)
+	int CantAlumnosAprobCurso(int idCurso);
+	
+	@Query(value = "select count(*) from resultado\r\n"
+			+ "where id_examen in (select id_examen from examen where id_curso = ?1)\r\n"
+			+ "and nota < 10.5\r\n"
+			+ "and estado = true", 
+		       nativeQuery = true)
+	int CantAlumnosDesAprobCurso(int idCurso);
+	
+	@Query(value = "select count(*) from detallecurso a\r\n"
+			+ "where a.id_curso = ?1 \r\n"
+			+ "and a.id_usuario in (\r\n"
+			+ "	select b.id_usuario from usuario_rol b \r\n"
+			+ "	where b.id_usuario = a.id_usuario \r\n"
+			+ "	and b.id_rol = 1)", 
+		       nativeQuery = true)
+	int CantAlumnosCurso(int idCurso);
 
+	@Query(value = "select COALESCE(nota,0)from resultado\r\n"
+			+ "where id_examen in (select id_examen from examen where id_curso = ?1)\r\n"
+			+ "and estado = true", 
+		       nativeQuery = true)
+	List<Double> NotasCurso(Integer idCurso);
 }

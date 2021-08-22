@@ -24,6 +24,7 @@ import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCompleto;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenCulminado;
 import com.websecurity.pwcev.apirest.entidadmodelo.DetalleExamenNota;
 import com.websecurity.pwcev.apirest.entidadmodelo.ExamCursoAlumno;
+import com.websecurity.pwcev.apirest.entidadmodelo.ExamenesPromedio;
 import com.websecurity.pwcev.apirest.model.DetalleRegistroExamen;
 import com.websecurity.pwcev.apirest.model.Examen;
 import com.websecurity.pwcev.apirest.model.Pregunta;
@@ -400,5 +401,26 @@ public class ExamenController {
 		response.put("promedio", promedio);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
+	
+	@GetMapping("/promedio/curso/{idcurso}")
+	public ResponseEntity<?> ListaExamenesPorCurso(@PathVariable("idcurso") Integer idCurso){
+		double promedio = 0;
+		Map<String, Object> response = new HashMap<>();
+		
+		List<ExamenesPromedio> examenes = null;
+
+		try {
+			examenes = service.ListaExamenesPromedio(idCurso);
+		} catch (DataAccessException e) {
+			response.put("mensaje", "Error al intentar obtener la lista de la base de datos.");
+			response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		response.put("mensaje", "Lista de examenes");
+		response.put("examenes", examenes);
+		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+	}
+	
 	
 }

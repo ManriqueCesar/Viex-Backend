@@ -36,6 +36,5 @@ public class PagoServiceImpl implements IPagoService {
 		usuarioRepo.actualizarMembresiaUsuario(p.getUsuario().getIdUsuario(), p.getIdPlan());
 		return pagoRepo.save(p);
 	}
-
 	
 }

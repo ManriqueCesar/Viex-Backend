@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,6 +57,12 @@ public class UsuarioController {
 		return new ResponseEntity<Optional<Usuario>>(us,HttpStatus.OK);
 				
 	}*/
+	
+	@PutMapping("/actualizar/plan/{idPlan}/usuario/{idUsuario}")
+	public Optional<Usuario> actualizarMembresiaUsuario(@PathVariable("idPlan") int idPlan, @PathVariable("idUsuario") int idUsuario) {
+		usuarioService.actualizarMembresiaUsuario(idUsuario, idPlan);
+		return usuarioService.buscarPorId(idUsuario);
+	}
 	
 	@GetMapping("/{id}")
 	public Optional<Usuario> usuarioId(@PathVariable("id") int id) {

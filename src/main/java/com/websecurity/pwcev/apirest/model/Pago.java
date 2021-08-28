@@ -36,10 +36,10 @@ public class Pago {
 	private Date fechaFin;
 	
 	@Column(name = "meses", nullable = false)
-	private int meses;
+	private Integer meses;
 	
 	@Column(name = "id_plan", nullable = false)
-	private int idPlan; //Plan nuevo
+	private Integer idPlan; //Plan nuevo
 	
 	@ManyToOne
 	@JoinColumn(name = "id_usuario", nullable = false, foreignKey = @ForeignKey(name = "fk_pago_usuario"))
@@ -101,19 +101,19 @@ public class Pago {
 		this.usuario = usuario;
 	}
 	
-	public int getMeses() {
+	public Integer getMeses() {
 		return meses;
 	}
 
-	public void setMeses(int meses) {
+	public void setMeses(Integer meses) {
 		this.meses = meses;
 	}
 	
-	public int getIdPlan() {
+	public Integer getIdPlan() {
 		return idPlan;
 	}
 
-	public void setIdPlan(int idPlan) {
+	public void setIdPlan(Integer idPlan) {
 		this.idPlan = idPlan;
 	}
 	

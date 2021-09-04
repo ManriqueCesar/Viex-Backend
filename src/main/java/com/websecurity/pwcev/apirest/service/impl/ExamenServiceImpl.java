@@ -407,6 +407,7 @@ public class ExamenServiceImpl implements IExamenService {
 		for (Examen examen : examenes) {
 			
 			exaPro =  new ExamenesPromedio(
+					examen.getIdExamen(),
 					examen.getTitulo(), 
 					examen.getFechaInicio(), 
 					repo.PromedioPorExamen(examen.getIdExamen()), 

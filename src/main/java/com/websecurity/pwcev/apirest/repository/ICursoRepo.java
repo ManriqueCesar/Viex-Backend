@@ -105,7 +105,7 @@ public interface ICursoRepo  extends JpaRepository<Curso, Integer>{
 	@Query(value = "select count(*) from resultado\r\n"
 			+ "where id_examen in (select id_examen from examen where id_curso = ?1)\r\n"
 			+ "and nota < 10.5\r\n"
-			+ "and estado = true", 
+			+ "or estado = false ",
 		       nativeQuery = true)
 	int CantAlumnosDesAprobCurso(int idCurso);
 	

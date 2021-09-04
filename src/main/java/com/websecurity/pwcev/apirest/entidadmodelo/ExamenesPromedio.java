@@ -4,13 +4,15 @@ import java.util.Date;
 
 public class ExamenesPromedio {
 	
+	public int id_examen;
 	public String titulo;
 	public Date fecha;
 	public double promedio;
 	public double promFR;
 	
-	public ExamenesPromedio(String titulo, Date fecha, double promedio, double promFR) {
+	public ExamenesPromedio(int id_examen,String titulo, Date fecha, double promedio, double promFR) {
 		super();
+		this.id_examen = id_examen;
 		this.titulo = titulo;
 		this.fecha = fecha;
 		this.promedio = promedio;
@@ -47,6 +49,14 @@ public class ExamenesPromedio {
 
 	public void setPromFR(double promFR) {
 		this.promFR = promFR;
+	}
+
+	public int getId_examen() {
+		return id_examen;
+	}
+
+	public void setId_examen(int id_examen) {
+		this.id_examen = id_examen;
 	}
 
 	

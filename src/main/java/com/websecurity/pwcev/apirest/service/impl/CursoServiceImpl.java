@@ -46,6 +46,8 @@ public class CursoServiceImpl implements ICursoService {
 
 	@Autowired
 	private IUsuarioRepo repoUs;
+	
+	public double promedioGen;
 
 	@Override
 	public Optional<Curso> findById(Integer id) {
@@ -200,15 +202,22 @@ public class CursoServiceImpl implements ICursoService {
 
 		DetallesCurso curso = null;
 		List<Double> notas = new ArrayList<Double>();
+		int cantAprob = 0;
+		int cantAlumC = 0;
+		double PromGCurso = 0;
 		
+		cantAprob = CantAlumnosAprobCursoI(idCurso);
+		cantAlumC = repo.CantAlumnosCurso(idCurso);
 		notas = repo.NotasCurso(idCurso);
+		
+		PromGCurso = promedioGen/cantAlumC;
 
 		curso = new DetallesCurso(
-				repo.CantAlumnosCurso(idCurso), 
-				repo.PromedioPorCurso(idCurso), 
+				cantAlumC, 
+				PromGCurso, 
 				DesvEstandar(repo.PromedioPorCurso(idCurso),notas),
-				CantAlumnosAprobCursoI(idCurso), 
-				repo.CantAlumnosCurso(idCurso)-CantAlumnosAprobCursoI(idCurso));
+				cantAprob, 
+				cantAlumC-cantAprob);
 
 		return curso;
 	}
@@ -239,6 +248,7 @@ public class CursoServiceImpl implements ICursoService {
 		double promedio = 0;
 		int cantidad = 0;
 		int cant = 0;
+		promedioGen = 0;
 		
 		examenes = repoEx.findByCursoIdCurso(idCurso);
 		alumnos = repo.alumnosxcurso(idCurso);
@@ -246,22 +256,22 @@ public class CursoServiceImpl implements ICursoService {
 		
 		for (Integer alumno : alumnos) {
 			for (Examen examen : examenes) {
+				
+				System.out.println(repo.contadornotaxExamen(alumno, examen.getIdExamen()));
 				if (repo.contadornotaxExamen(alumno, examen.getIdExamen()) == 0) {
 					nota = 0;
 				} else {
 					nota = repo.notaxExamen(alumno, examen.getIdExamen());
 				}
-				
+				System.out.println(nota);
 				promedio = promedio + nota;
-				
-				if (promedio != 0 && cant != 0) {
-					promedio = promedio /cant;
-				}
-				System.out.println(alumno);
-				System.out.println(promedio);
-				System.out.println(cant);
 			}
 			
+			if (promedio != 0 && cant != 0) {
+				promedio = promedio /cant;
+			}
+			
+			promedioGen = promedioGen + promedio;
 			
 			if (promedio >= 10.5) {
 				cantidad = cantidad +1;

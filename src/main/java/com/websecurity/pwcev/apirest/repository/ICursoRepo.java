@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import com.websecurity.pwcev.apirest.entidadmodelo.CursosPeriodo;
 import com.websecurity.pwcev.apirest.model.Curso;
+import com.websecurity.pwcev.apirest.model.Respuesta;
+import com.websecurity.pwcev.apirest.model.Resultado;
 import com.websecurity.pwcev.apirest.model.Usuario;
 
 public interface ICursoRepo  extends JpaRepository<Curso, Integer>{
@@ -118,9 +120,37 @@ public interface ICursoRepo  extends JpaRepository<Curso, Integer>{
 		       nativeQuery = true)
 	int CantAlumnosCurso(int idCurso);
 
-	@Query(value = "select COALESCE(nota,0)from resultado\r\n"
+	@Query(value = "select COALESCE(nota,0) from resultado\r\n"
 			+ "where id_examen in (select id_examen from examen where id_curso = ?1)\r\n"
 			+ "and estado = true", 
 		       nativeQuery = true)
 	List<Double> NotasCurso(Integer idCurso);
+	
+	@Query(value = "select a.id_usuario from detallecurso a\r\n"
+			+ "where a.id_curso = ?1 \r\n"
+			+ "and a.id_usuario in (\r\n"
+			+ "select b.id_usuario from usuario_rol b \r\n"
+			+ "where b.id_usuario = a.id_usuario \r\n"
+			+ "and b.id_rol = 1)", 
+		       nativeQuery = true)
+    List<Integer> alumnosxcurso(Integer idCurso);
+	
+	@Query(value = "select  COALESCE(nota,0) from resultado\r\n"
+			+ "where id_usuario = ?1\r\n"
+			+ "and id_examen = ?2\r\n"
+			+ "and estado = true", 
+		       nativeQuery = true)
+    double notaxExamen (Integer idAlumno, Integer idExamen);
+	
+	@Query(value = "select  count(*) from resultado\r\n"
+			+ "where id_usuario = ?1\r\n"
+			+ "and id_examen = ?2\r\n"
+			+ "and estado = true", 
+		       nativeQuery = true)
+    Integer contadornotaxExamen (Integer idAlumno, Integer idExamen);
+	
+	@Query(value = "select count(*) from examen\r\n"
+			+ "where id_curso = ?1", 
+		       nativeQuery = true)
+    Integer cntidadExamxCurso (Integer idCurso);
 }

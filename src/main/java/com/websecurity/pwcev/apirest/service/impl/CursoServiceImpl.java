@@ -207,8 +207,8 @@ public class CursoServiceImpl implements ICursoService {
 				repo.CantAlumnosCurso(idCurso), 
 				repo.PromedioPorCurso(idCurso), 
 				DesvEstandar(repo.PromedioPorCurso(idCurso),notas),
-				repo.CantAlumnosAprobCurso(idCurso), 
-				repo.CantAlumnosDesAprobCurso(idCurso));
+				CantAlumnosAprobCursoI(idCurso), 
+				repo.CantAlumnosCurso(idCurso)-CantAlumnosAprobCursoI(idCurso));
 
 		return curso;
 	}
@@ -230,5 +230,44 @@ public class CursoServiceImpl implements ICursoService {
 
 		return desvEstandar;
 	}
-
+	
+	public int CantAlumnosAprobCursoI( int idCurso) {
+		
+		List<Examen> examenes =  new ArrayList<Examen>();
+		List<Integer> alumnos = new ArrayList<Integer>();
+		double nota = 0;
+		double promedio = 0;
+		int cantidad = 0;
+		int cant = 0;
+		
+		examenes = repoEx.findByCursoIdCurso(idCurso);
+		alumnos = repo.alumnosxcurso(idCurso);
+		cant = repo.cntidadExamxCurso(idCurso);
+		
+		for (Integer alumno : alumnos) {
+			for (Examen examen : examenes) {
+				if (repo.contadornotaxExamen(alumno, examen.getIdExamen()) == 0) {
+					nota = 0;
+				} else {
+					nota = repo.notaxExamen(alumno, examen.getIdExamen());
+				}
+				
+				promedio = promedio + nota;
+				
+				if (promedio != 0 && cant != 0) {
+					promedio = promedio /cant;
+				}
+				System.out.println(alumno);
+				System.out.println(promedio);
+				System.out.println(cant);
+			}
+			
+			
+			if (promedio >= 10.5) {
+				cantidad = cantidad +1;
+			}
+		}
+		
+		return cantidad;
+	}
 }
